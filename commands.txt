@@ -1,0 +1,2 @@
+msf-pattern_create -l 650 > pattern.txt
+msf-pattern_offset -l 650 -q 39654138
