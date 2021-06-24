@@ -6,14 +6,15 @@ from termcolor import colored,cprint
 RHOST = sys.argv[1]
 RPORT = int(sys.argv[2])
 
-payload = "\x41"
+payload = "\x4E"
 payload_size = 50 
 postfix = "\n"
+buff_size = 0
 
 while True:
     try:
         # setup payload
-        buff = payload * payload_size + postfix
+        buff = bytes(payload * payload_size + postfix, encoding="ascii")
         buff_size = len(buff) - len(postfix) 
 
         # payload status
@@ -22,7 +23,7 @@ while True:
         # handle connection
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((RHOST, RPORT))
-        s.sendall(buff.encode('utf-8'))
+        s.send(buff)
 
         # handle response
         response = s.recv(1024)
