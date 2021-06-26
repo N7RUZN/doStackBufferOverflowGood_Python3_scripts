@@ -23,7 +23,7 @@ with open("msf-pattern_file.txt", "rb") as f:
 
 # handle encoding for python3
 postfix = bytes("\n", encoding="ascii")
-buff    =  bytes(pattern)
+buff    = bytes(pattern)
 buff    += bytes(postfix, encoding="ascii")
 
 
