@@ -27,11 +27,10 @@ while True:
         # Handle Connection
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((RHOST, RPORT))
-        response = s.recv(1024)
         s.send(buff)
+        response = s.recv(1024)
         s.close()
 
-        
         # Increment the Payload Size by 10 bytes
         payload_size += 10
         time.sleep(2)       
